@@ -1,6 +1,9 @@
 from starlette.responses import StreamingResponse
 
 from src.domains.agent import service
+from src import settings
+from src.core.http_client import httpx
+from src.utils import serial
 
 
 async def stream(request):
@@ -12,3 +15,39 @@ async def stream(request):
             'X-Accel-Buffering': 'no',
         }
     )
+
+
+async def ask(request):
+    system_prompt = 'You are a helpful assistant.'
+
+    api_key = settings.LLM_KEY
+
+    url = 'https://api.deepseek.com/chat/completions'
+
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+
+    user_prompt = (
+        'Which is the longest river in the world? '
+        'The Nile River.'
+    )
+
+    payload = {
+        'model': settings.LLM_MODEL,
+        'messages': [
+            {'role': 'system', 'content': system_prompt},
+            {'role': 'user', 'content': user_prompt}
+        ],
+        'stream': False,
+        'thinking': {'type': 'disabled'}
+    }
+
+    client = httpx.get()
+    response = await client.post(url, headers=headers, json=payload)
+    response.raise_for_status()  # 检查 HTTP 错误
+    data = response.json()
+    content = data['choices'][0]['message']['content']
+    output = serial.from_json(content)
+    return output

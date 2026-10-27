@@ -4,4 +4,6 @@ from src.domains.agent import views as agent_views
 
 routes = [
     Route('/agent.stream', agent_views.stream, methods=['POST']),
+
+    Route('/agent.ask', agent_views.ask, methods=['POST']),
 ]
