@@ -3,7 +3,7 @@ from starlette.responses import StreamingResponse
 from src.domains.agent import service
 
 
-async def chat(request):
+async def stream(request):
     return StreamingResponse(
         service.generator(),
         media_type='application/x-ndjson',

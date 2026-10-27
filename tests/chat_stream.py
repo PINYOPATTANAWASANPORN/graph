@@ -3,7 +3,7 @@ import time
 
 import httpx2 as httpx
 
-URL = 'http://127.0.0.1:8848/agent.chat'
+URL = 'http://127.0.0.1:8848/agent.stream'
 
 
 def main():
